@@ -1,5 +1,13 @@
 const ShopItem = require("../models/ShopItem");
 
+const getShopItems = async (req, res) => {
+    try {
+      const shopItems = await ShopItem.find();
+      res.json(shopItems);
+    } catch (error) {
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
 // Add new shop item
 const addShopItem = async (req, res) => {
   try {
@@ -24,6 +32,7 @@ const addShopItem = async (req, res) => {
     console.error("Error adding shop item:", error);
     res.status(500).json({ message: "Internal server error" });
   }
+
 };
 
 // Update shop item details
@@ -31,12 +40,12 @@ const updateShopItem = async (req, res) => {
   try {
     // Extract shop item ID and updated details from request body
     const { itemId } = req.params;
-    const { description, price, availableCount } = req.body;
+    const {title, description, price, availableCount, genre } = req.body;
 
     // Find shop item by ID and update its details
     const updatedItem = await ShopItem.findByIdAndUpdate(
       itemId,
-      { description, price, availableCount },
+      { title ,description, price, availableCount, genre },
       { new: true }
     );
 
@@ -90,11 +99,17 @@ const searchShopItems = async (req, res) => {
     console.error("Error searching for shop items:", error);
     res.status(500).json({ message: "Internal server error" });
   }
+
+
+
+
+
 };
 
 module.exports = {
   addShopItem,
   updateShopItem,
   deleteShopItem,
-  searchShopItems
+  searchShopItems,
+  getShopItems
 };

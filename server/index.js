@@ -3,6 +3,8 @@ require("dotenv").config();
 
 const connectToMongo = require("./db/connection");
 
+const adminRoutes = require('../server/routes/AdminRoute');
+
 const app = express();
 const port =
   process.env.NODE_ENV === "test"
@@ -11,6 +13,9 @@ const port =
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+
+app.use('/admin/shop-items', adminRoutes);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

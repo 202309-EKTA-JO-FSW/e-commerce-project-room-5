@@ -22,7 +22,7 @@ const shopItemSchema = new mongoose.Schema({
      required: true }
 });
 
-// Create Shop Item model
+
 const ShopItem = mongoose.model("ShopItem", shopItemSchema);
 
 module.exports = ShopItem;
