@@ -8,7 +8,7 @@ const adminController = require("../controller/adminCtrl");
 
 
 
-router.get('/',adminController.getShopItems);
+router.get('/shop-items',adminController.getShopItems);
 
 router.post("/shop-items", adminController.addShopItem);
 // Update shop item details
