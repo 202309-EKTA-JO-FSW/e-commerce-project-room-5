@@ -14,7 +14,7 @@ const adminSchema = new mongoose.Schema({
   },
 });
 
-// Hash the password before saving
+// hash the password before saving
 adminSchema.pre("save", async function (next) {
   try {
     const salt = await bcrypt.genSalt(10);

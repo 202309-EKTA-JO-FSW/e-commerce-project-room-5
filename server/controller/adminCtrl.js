@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../config/config");
+const ShopItem = require("../models/ShopItem");
 const Admin = require("../models/adminModel");
+const Customer = require("../models/customerModel");
 
-// Sign in admin
+// sign in admin
 exports.signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -28,16 +30,10 @@ exports.signIn = async (req, res) => {
   }
 };
 
-// Sign out admin
+// sign out admin
 exports.signOut = async (req, res) => {
   try {
-    // Clear session or token on the client side
-    // For sessions: destroy the session
-    req.session.destroy();
-
-    // For tokens: clear the token stored on the client side (e.g., remove from localStorage)
-    // Example if using JWT:
-    // localStorage.removeItem('token');
+    //again session never really exists
 
     res.json({ message: "Successfully signed out" });
   } catch (error) {
@@ -46,20 +42,20 @@ exports.signOut = async (req, res) => {
   }
 };
 
-// Create new admin account
+// create new admin account
 exports.createNewAdmin = async (req, res) => {
   try {
-    // Extract necessary data from the request body
+    // extract necessary data from the request body
     const { email, password } = req.body;
 
-    // Check if email and password are provided
+    // check if email and password are provided
     if (!email || !password) {
       return res
         .status(400)
         .json({ message: "Email and password are required" });
     }
 
-    // Check if admin with the same email already exists
+    // check if admin with the same email already exists
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
       return res
@@ -67,20 +63,145 @@ exports.createNewAdmin = async (req, res) => {
         .json({ message: "Admin with this email already exists" });
     }
 
-    // Create a new admin account
+    // create a new admin account
     const newAdmin = await Admin.create({ email, password });
 
-    // Generate token
+    // generate token
     const token = jwt.sign({ id: newAdmin._id }, config.secretKey, {
       expiresIn: "1h",
     });
 
-    // Respond with success message and token
+    // respond with success message and token
     res.status(201).json({
       message: "New admin account created successfully",
       admin: newAdmin,
       token: token,
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+///////////////////////////
+// ADMIN FUNCTIONALITIES
+//////////////////////////
+
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    res.json(customers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.getShopItems = async (req, res) => {
+  try {
+    const shopItems = await ShopItem.find();
+    res.json(shopItems);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+// add new shop item
+exports.addShopItem = async (req, res) => {
+  try {
+    // extract shop item details from request body
+    const { title, image, price, description, availableCount, genre } =
+      req.body;
+
+    // create new shop item
+    const newItem = new ShopItem({
+      title,
+      image,
+      price,
+      description,
+      availableCount,
+      genre,
+    });
+
+    // save new shop item to database
+    await newItem.save();
+
+    res.status(201).json({ message: "Shop item added successfully", newItem });
+  } catch (error) {
+    console.error("Error adding shop item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// update shop item details
+exports.updateShopItem = async (req, res) => {
+  try {
+    // extract shop item ID and updated details from request body
+    const { itemId } = req.params;
+    const { title, description, price, availableCount, genre } = req.body;
+
+    // find shop item by ID and update its details
+    const updatedItem = await ShopItem.findByIdAndUpdate(
+      itemId,
+      { title, description, price, availableCount, genre },
+      { new: true }
+    );
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Shop item not found" });
+    }
+
+    res.json({ message: "Shop item updated successfully", updatedItem });
+  } catch (error) {
+    console.error("Error updating shop item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// delete shop item
+exports.deleteShopItem = async (req, res) => {
+  try {
+    // extract shop item ID from request parameters
+    const { itemId } = req.params;
+
+    // find shop item by ID and delete it
+    const deletedItem = await ShopItem.findByIdAndDelete(itemId);
+
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Shop item not found" });
+    }
+
+    res.json({ message: "Shop item deleted successfully", deletedItem });
+  } catch (error) {
+    console.error("Error deleting shop item:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// search for shop items based on different properties
+exports.searchShopItems = async (req, res) => {
+  try {
+    // extract search criteria from request query parameters
+    const { title, genre } = req.query;
+
+    // construct query object based on search criteria
+    const query = {};
+    if (title) query.title = title;
+    if (genre) query.genre = genre;
+
+    // find shop items matching the search criteria
+    const shopItems = await ShopItem.find(query);
+
+    res.json(shopItems);
+  } catch (error) {
+    console.error("Error searching for shop items:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    res.json(customers);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
