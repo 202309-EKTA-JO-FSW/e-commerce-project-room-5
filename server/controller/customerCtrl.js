@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const config = require("../config/config");
+// const config = require("../config/config");
 const Customer = require("../models/customerModel");
 const ShopItem = require("../models/ShopItem");
 const Cart = require("../models/Cart");

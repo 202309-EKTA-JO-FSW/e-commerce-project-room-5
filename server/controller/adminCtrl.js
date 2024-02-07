@@ -30,11 +30,9 @@ exports.signIn = async (req, res) => {
   }
 };
 
-// sign out admin
+// sign out
 exports.signOut = async (req, res) => {
   try {
-    //again session never really exists
-
     res.json({ message: "Successfully signed out" });
   } catch (error) {
     console.error(error);
@@ -42,20 +40,17 @@ exports.signOut = async (req, res) => {
   }
 };
 
-// create new admin account
+// new admin
 exports.createNewAdmin = async (req, res) => {
   try {
-    // extract necessary data from the request body
     const { email, password } = req.body;
 
-    // check if email and password are provided
     if (!email || !password) {
       return res
         .status(400)
         .json({ message: "Email and password are required" });
     }
 
-    // check if admin with the same email already exists
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
       return res
@@ -63,15 +58,12 @@ exports.createNewAdmin = async (req, res) => {
         .json({ message: "Admin with this email already exists" });
     }
 
-    // create a new admin account
     const newAdmin = await Admin.create({ email, password });
 
-    // generate token
     const token = jwt.sign({ id: newAdmin._id }, config.secretKey, {
       expiresIn: "1h",
     });
 
-    // respond with success message and token
     res.status(201).json({
       message: "New admin account created successfully",
       admin: newAdmin,
