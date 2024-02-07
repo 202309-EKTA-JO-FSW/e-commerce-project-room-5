@@ -83,6 +83,16 @@ exports.createNewAdmin = async (req, res) => {
   }
 };
 
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    res.json(customers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 ///////////////////////////
 // ADMIN FUNCTIONALITIES
 //////////////////////////
@@ -195,15 +205,5 @@ exports.searchShopItems = async (req, res) => {
   } catch (error) {
     console.error("Error searching for shop items:", error);
     res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-exports.getAllCustomers = async (req, res) => {
-  try {
-    const customers = await Customer.find();
-    res.json(customers);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
   }
 };

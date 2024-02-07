@@ -56,13 +56,12 @@ exports.signOut = async (req, res) => {
 
 exports.signUp = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name, address, phone } = req.body;
 
-    // check if email and password are provided
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
+    if (!email || !password || !name || !address || !phone) {
+      return res.status(400).json({
+        message: "Email, password, name, address, and phone are required",
+      });
     }
 
     // check if customer with the same email already exists
@@ -80,6 +79,9 @@ exports.signUp = async (req, res) => {
     const newCustomer = await Customer.create({
       email,
       password: hashedPassword,
+      name,
+      address,
+      phone,
     });
 
     // generate token
@@ -98,6 +100,51 @@ exports.signUp = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// exports.signUp = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // check if email and password are provided
+//     if (!email || !password) {
+//       return res
+//         .status(400)
+//         .json({ message: "Email and password are required" });
+//     }
+
+//     // check if customer with the same email already exists
+//     const existingCustomer = await Customer.findOne({ email });
+//     if (existingCustomer) {
+//       return res
+//         .status(400)
+//         .json({ message: "Customer with this email already exists" });
+//     }
+
+//     // hash the password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // create a new customer account
+//     const newCustomer = await Customer.create({
+//       email,
+//       password: hashedPassword,
+//     });
+
+//     // generate token
+//     const token = jwt.sign({ id: newCustomer._id }, config.secretKey, {
+//       expiresIn: "24h",
+//     });
+
+//     // respond with success message and token
+//     res.status(201).json({
+//       message: "New customer account created successfully",
+//       customer: newCustomer,
+//       token,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
 
 //////////////////
 //CUSTOMER FUNCTIONALITIES
