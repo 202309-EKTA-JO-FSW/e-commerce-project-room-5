@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-// const config = require("../config/config");
+const config = require("../config/config");
 const Customer = require("../models/customerModel");
 const ShopItem = require("../models/ShopItem");
 const Cart = require("../models/Cart");
@@ -84,12 +84,10 @@ exports.signUp = async (req, res) => {
       phone,
     });
 
-    // generate token
     const token = jwt.sign({ id: newCustomer._id }, config.secretKey, {
       expiresIn: "24h",
     });
 
-    // respond with success message and token
     res.status(201).json({
       message: "New customer account created successfully",
       customer: newCustomer,
