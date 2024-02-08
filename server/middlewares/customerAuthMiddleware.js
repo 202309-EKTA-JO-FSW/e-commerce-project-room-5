@@ -9,7 +9,7 @@ module.exports = {
       if (!token) {
         return res
           .status(401)
-          .json({ message: "Authorization is not included in the request" });
+          .json({ message: "Authorization is not included in the header" });
       }
 
       const decoded = jwt.verify(token, config.secretKey);

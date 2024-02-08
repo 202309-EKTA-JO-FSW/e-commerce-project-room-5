@@ -16,11 +16,6 @@ router.post(
   adminCtrl.createNewAdmin
 );
 
-// route for fetching all orders (accessible only to admins)
-router.get("/orders", authMiddleware.authenticateAdmin, (req, res) => {
-  // logic to fetch all orders
-});
-
 // route for fetching all customers (accessible only to admins)
 router.get(
   "/customers",
@@ -30,7 +25,7 @@ router.get(
 
 //ignore
 router.get("/signin", (req, res) => {
-  res.render("admin-signin");
+  res.render("hi im working");
 });
 
 //////////////////////
